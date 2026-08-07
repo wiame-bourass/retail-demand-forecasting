@@ -69,3 +69,8 @@ outputs/*
 # On garde les vraies figures pour le portfolio GitHub
 !reports/figures/
 !reports/figures/*.png
+# Personal / interview documentation
+docs/LOREAL_SKILLS_MAPPING.md
+docs/INTERVIEW_STORY.md
+START_HERE.md
+*.docx
