@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import logging
 import warnings
 
 import numpy as np
 import pandas as pd
 
-
+logger = logging.getLogger
 def croston_forecast(y: np.ndarray, horizon: int, alpha: float = 0.1) -> np.ndarray:
     y = np.asarray(y, dtype=float)
     positive_idx = np.flatnonzero(y > 0)
@@ -102,12 +103,23 @@ def benchmark_statistical_models(
         }
         try:
             candidates["ets"] = ets_forecast(train, horizon)
-        except Exception:
-            pass
+        except Exception as exc:  # noqa: BLE001
+            logger.warning(
+                "ETS forecast skipped for store=%s family=%s: %s",
+                series.store_nbr,
+                series.family,
+                exc,
+            )
+
         try:
             candidates["sarima"] = sarima_forecast(train, horizon)
-        except Exception:
-            pass
+        except Exception as exc:  # noqa: BLE001
+            logger.warning(
+                "SARIMA forecast skipped for store=%s family=%s: %s",
+                series.store_nbr,
+                series.family,
+                exc,
+            )
         from favorita_forecasting.evaluation.metrics import metric_bundle
 
         for model, prediction in candidates.items():

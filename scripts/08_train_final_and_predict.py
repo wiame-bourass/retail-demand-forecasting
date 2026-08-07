@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-import pandas as pd
-
 from common import config_argument
-from favorita_forecasting.storage import read_frame
-from favorita_forecasting.modeling.backtesting import train_final_and_predict_test
-from favorita_forecasting.utils import read_json
 
+from favorita_forecasting.modeling.backtesting import train_final_and_predict_test
+from favorita_forecasting.storage import read_frame
+from favorita_forecasting.utils import read_json
 
 if __name__ == "__main__":
     _, cfg = config_argument("Train frozen champion on all history and forecast Kaggle test")

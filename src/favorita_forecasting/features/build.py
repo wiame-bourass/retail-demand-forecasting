@@ -72,15 +72,30 @@ def build_features(panel: pd.DataFrame, cfg: dict[str, Any]) -> tuple[pd.DataFra
     shifted_sales = grouped_sales.shift(1)
     for window in cfg.get("rolling_windows", [7, 14, 28]):
         window = int(window)
-        grouped_shifted = shifted_sales.groupby([frame[k] for k in SERIES_KEYS], sort=False)
+        grouped_shifted = shifted_sales.groupby(
+            [frame[k] for k in SERIES_KEYS],
+            sort=False,
+        )
+
         frame[f"sales_roll_mean_{window}"] = grouped_shifted.transform(
-            lambda s: s.rolling(window, min_periods=max(2, window // 3)).mean()
+            lambda s, w=window: s.rolling(
+                w,
+                min_periods=max(2, w // 3),
+            ).mean()
         )
+
         frame[f"sales_roll_median_{window}"] = grouped_shifted.transform(
-            lambda s: s.rolling(window, min_periods=max(2, window // 3)).median()
+            lambda s, w=window: s.rolling(
+                w,
+                min_periods=max(2, w // 3),
+            ).median()
         )
+
         frame[f"sales_roll_std_{window}"] = grouped_shifted.transform(
-            lambda s: s.rolling(window, min_periods=max(2, window // 3)).std()
+            lambda s, w=window: s.rolling(
+                w,
+                min_periods=max(2, w // 3),
+            ).std()
         )
     if {"sales_roll_mean_7", "sales_roll_mean_28"}.issubset(frame.columns):
         frame["recent_trend_7_vs_28"] = frame["sales_roll_mean_7"] - frame["sales_roll_mean_28"]
@@ -164,9 +179,7 @@ def assert_target_features_are_causal(panel: pd.DataFrame, features: pd.DataFram
     causal_cols = [
         c
         for c in base.columns
-        if c.startswith("sales_lag_")
-        or c.startswith("sales_roll_")
-        or c.startswith("prior_")
+        if c.startswith(("sales_lag_", "sales_roll_", "prior_"))
         or c == "recent_trend_7_vs_28"
     ]
     for col in causal_cols:

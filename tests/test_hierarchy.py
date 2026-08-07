@@ -18,4 +18,6 @@ def test_bottom_up_is_coherent():
     result = bottom_up_coherence(predictions)
     assert result["coherent"] is True
     levels = hierarchy_metrics(predictions)
-    assert set(["total", "store", "family", "store_family"]).issubset(set(levels["level"]))
+    assert {"total", "store", "family", "store_family"}.issubset(
+    set(levels["level"])
+)

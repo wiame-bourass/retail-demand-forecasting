@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-import pandas as pd
-
 from common import config_argument
+
 from favorita_forecasting.data.family_weights import build_family_weights
 from favorita_forecasting.modeling.backtesting import temporal_windows
 from favorita_forecasting.storage import read_frame
-
 
 if __name__ == "__main__":
     _, cfg = config_argument("Build train-only family weights for adapted weighted RMSLE")

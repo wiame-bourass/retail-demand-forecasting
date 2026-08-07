@@ -3,12 +3,11 @@ from __future__ import annotations
 from typing import Any
 
 import numpy as np
-from sklearn.compose import TransformedTargetRegressor
+from sklearn.compose import ColumnTransformer, TransformedTargetRegressor
 from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OrdinalEncoder
-from sklearn.compose import ColumnTransformer
 
 
 def _base_model(name: str, params: dict[str, Any], seed: int):

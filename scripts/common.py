@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 
 from favorita_forecasting.config import ProjectConfig, load_config
 from favorita_forecasting.utils import configure_logging, ensure_dir, set_seed

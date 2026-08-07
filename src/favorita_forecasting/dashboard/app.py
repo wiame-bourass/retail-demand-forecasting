@@ -5,10 +5,10 @@ import os
 from pathlib import Path
 
 import pandas as pd
-
-from favorita_forecasting.storage import frame_exists, read_frame
 import plotly.express as px
 import streamlit as st
+
+from favorita_forecasting.storage import frame_exists, read_frame
 
 ROOT = Path(__file__).resolve().parents[3]
 OUTPUTS = Path(os.getenv("FAVORITA_OUTPUTS", ROOT / "outputs"))

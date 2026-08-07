@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import pandas as pd
-
 from common import config_argument
-from favorita_forecasting.storage import read_frame
-from favorita_forecasting.inventory.simulator import simulate_inventory
 
+from favorita_forecasting.inventory.simulator import simulate_inventory
+from favorita_forecasting.storage import read_frame
 
 if __name__ == "__main__":
     _, cfg = config_argument("Compare inventory outcomes for baseline and champion")

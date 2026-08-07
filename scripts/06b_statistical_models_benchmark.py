@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 import pandas as pd
-
 from common import config_argument
+
 from favorita_forecasting.modeling.backtesting import temporal_windows
 from favorita_forecasting.modeling.statistical import benchmark_statistical_models
 from favorita_forecasting.storage import read_frame
-
 
 if __name__ == "__main__":
     _, cfg = config_argument("Benchmark ETS, SARIMA, Croston and TSB on representative series")

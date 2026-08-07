@@ -8,7 +8,6 @@ try:
     import duckdb
 except ImportError:  # demo fallback
     duckdb = None
-import numpy as np
 import pandas as pd
 
 from favorita_forecasting.data.raw import raw_file_paths

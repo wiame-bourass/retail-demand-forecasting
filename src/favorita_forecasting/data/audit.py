@@ -40,7 +40,7 @@ def _duckdb_relation(path: Path) -> str:
 def _safe_scalar(con: Any, query: str) -> Any:
     try:
         return con.execute(query).fetchone()[0]
-    except Exception as exc:  # pragma: no cover - defensive for malformed external files
+    except Exception as exc:  # noqa: BLE001  # pragma: no cover
         LOGGER.warning("Audit query failed: %s", exc)
         return None
 

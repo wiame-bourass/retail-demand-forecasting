@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable
+from collections.abc import Iterable
 
 import numpy as np
 import pandas as pd
@@ -45,7 +45,7 @@ def metric_bundle(y_true: Iterable[float], y_pred: Iterable[float]) -> dict[str,
         "rmsle": rmsle(true, pred),
         "rmse": float(np.sqrt(np.mean((true - pred) ** 2))),
         "forecast_accuracy": float(1 - value_wape) if np.isfinite(value_wape) else np.nan,
-        "n": int(len(true)),
+        "n": len(true),
     }
 
 

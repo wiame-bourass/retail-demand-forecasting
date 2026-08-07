@@ -6,9 +6,9 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
+from fastapi import FastAPI, HTTPException, Query
 
 from favorita_forecasting.storage import frame_exists, read_frame
-from fastapi import FastAPI, HTTPException, Query
 
 ROOT = Path(__file__).resolve().parents[3]
 FORECAST_PATH = Path(os.getenv("FORECAST_OUTPUT", ROOT / "outputs" / "test_forecasts.parquet"))

@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 import pandas as pd
-
 from common import config_argument
+
 from favorita_forecasting.utils import read_json
 
 
