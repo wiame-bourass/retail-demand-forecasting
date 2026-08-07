@@ -84,7 +84,7 @@ def _aggregate_with_pandas(
     history_start: str,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     if files["train"].stat().st_size > 250_000_000:
-        raise RuntimeError("DuckDB is required for the full Favorita train.csv. Install requirements-core.txt")
+        raise RuntimeError("DuckDB is required for the full Favorita train.csv. Install requirements.txt")
     items = pd.read_csv(files["items"])
     train_raw = pd.read_csv(files["train"], parse_dates=["date"])
     train_raw = train_raw[

@@ -1,7 +1,7 @@
 FROM python:3.12-slim
 
 WORKDIR /app
-COPY requirements-core.txt requirements-models.txt requirements-apps.txt requirements.txt ./
+COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY pyproject.toml README.md ./
 COPY src ./src

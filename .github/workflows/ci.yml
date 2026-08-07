@@ -15,9 +15,9 @@ jobs:
         with:
           python-version: "3.12"
 
-      - run: pip install -e .
+      - run: pip install -r requirements-dev.txt
 
-      - run: pip install -r requirements-core.txt
+      - run: pip install -e .
 
       - run: ruff check src scripts tests
 

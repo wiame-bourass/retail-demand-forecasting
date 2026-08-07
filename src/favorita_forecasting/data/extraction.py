@@ -19,7 +19,7 @@ def extract_all_archives(raw_dir: Path, overwrite: bool = False) -> list[Path]:
             LOGGER.info("Skip existing %s", expected.name)
             continue
         if py7zr is None:
-            raise RuntimeError("py7zr is required to extract .7z files. Install requirements-core.txt")
+            raise RuntimeError("py7zr is required to extract .7z files. Install requirements.txt")
         LOGGER.info("Extracting %s", archive.name)
         with py7zr.SevenZipFile(archive, mode="r") as handle:
             handle.extractall(path=raw_dir)

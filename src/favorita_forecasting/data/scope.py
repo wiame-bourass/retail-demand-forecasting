@@ -70,7 +70,7 @@ def select_scope(raw_dir: Path, artifacts_dir: Path, scope_cfg: dict[str, Any]) 
     files = raw_file_paths(raw_dir)
     if duckdb is None:
         if files["train"].stat().st_size > 250_000_000:
-            raise RuntimeError("DuckDB is required for the full Favorita train.csv. Install requirements-core.txt")
+            raise RuntimeError("DuckDB is required for the full Favorita train.csv. Install requirements.txt")
         train_df = pd.read_csv(files["train"], parse_dates=["date"])
         items_df = pd.read_csv(files["items"])
         stores = pd.read_csv(files["stores"])

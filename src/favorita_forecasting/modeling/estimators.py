@@ -17,13 +17,13 @@ def _base_model(name: str, params: dict[str, Any], seed: int):
         try:
             from lightgbm import LGBMRegressor
         except ImportError as exc:  # pragma: no cover - optional dependency
-            raise RuntimeError("LightGBM n'est pas installé. Installe requirements-models.txt") from exc
+            raise RuntimeError("LightGBM n'est pas installé. Installe requirements.txt") from exc
         return LGBMRegressor(random_state=seed, n_jobs=-1, verbosity=-1, **params)
     if name == "catboost":
         try:
             from catboost import CatBoostRegressor
         except ImportError as exc:  # pragma: no cover - optional dependency
-            raise RuntimeError("CatBoost n'est pas installé. Installe requirements-models.txt") from exc
+            raise RuntimeError("CatBoost n'est pas installé. Installe requirements.txt") from exc
         return CatBoostRegressor(random_seed=seed, verbose=False, allow_writing_files=False, **params)
     raise ValueError(f"Unknown model: {name}")
 
