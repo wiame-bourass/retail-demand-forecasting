@@ -280,5 +280,5 @@ build the Docker image
 
 Detailed methodological choices are documented in:
 
-- `docs/METHODOLOGY_AND_MODEL_CHOICES.md`
+- `docs/METHODOLOGY.md`
 - `reports/EXECUTIVE_REPORT.md`

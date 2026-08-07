@@ -24,8 +24,6 @@ data/raw/*
 !data/raw/README.md
 
 # Données de démo
-data/demo_raw/*
-!data/demo_raw/.gitkeep
 
 # Données intermédiaires / transformées
 data/interim/*
