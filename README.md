@@ -1,104 +1,274 @@
 # Retail Demand Forecasting
 
-**Sujet :** prévision hiérarchique et groupée des ventes retail intégrant les promotions et les événements.
+End-to-end retail sales forecasting project built on the **Corporación Favorita Grocery Sales Forecasting** dataset.
 
-Ce dépôt transforme le dataset Kaggle original **Corporación Favorita Grocery Sales Forecasting** du niveau `date × store_nbr × item_nbr` vers le niveau métier `date × store_nbr × family`, puis construit un pipeline complet : audit, nettoyage, analyse statistique, feature engineering causal, validation temporelle, modèles globaux, analyse d'erreurs, agrégation hiérarchique, simulation de stock, API, dashboard, tests et suivi MLflow.
+The project transforms item-level daily sales into a business-oriented `store × product family` forecasting problem and covers the full workflow from data processing to model evaluation, API exposure, dashboarding, Docker, and continuous integration.
 
+## Problem
 
-## Ce que ce projet démontre
+Forecast daily observed sales for each `store_nbr × family` combination over a **16-day horizon** using:
 
-* Traitement de données à grande échelle avec DuckDB
-* Feature engineering pour les séries temporelles
-* Validation temporelle et prévention des fuites de données
-* Modèles de Gradient Boosting
-* Évaluation hiérarchique
-* Tests de Machine Learning
-* Développement d’API avec FastAPI et d’interface avec Streamlit
-* Conteneurisation avec Docker
-* Intégration et déploiement continus (CI/CD)
+- historical sales;
+- promotions;
+- calendar and holiday information;
+- store attributes;
+- product-family information;
+- oil-price signals;
+- causal lag and rolling features.
 
+Observed sales are treated as a proxy for demand because the dataset does not provide inventory levels, stockouts, or unmet demand.
 
-## Granularité et limite métier
+## Data
 
-La cible est la somme des ventes observées au niveau `store_nbr × family`. Les ventes sont utilisées comme **proxy de la demande** : le dataset ne fournit ni stocks, ni ruptures, ni demande non satisfaite. La simulation supply chain utilise donc des hypothèses explicites.
+The original Favorita training set contains more than **125 million item-store-day observations**.
 
-## Démarrage rapide avec les données de démonstration
+To keep the project computationally practical while preserving meaningful retail structure, the raw data are aggregated as:
+
+```text
+date × store_nbr × item_nbr
+          + item metadata
+                ↓
+date × store_nbr × item_nbr × family
+                ↓
+           aggregation
+                ↓
+date × store_nbr × family
+```
+
+DuckDB is used for memory-efficient processing of the large CSV files, followed by Parquet for downstream stages.
+
+Raw Kaggle data are **not stored in this repository**.
+
+## Pipeline
+
+```text
+Raw Favorita data
+      ↓
+Data audit & cleaning
+      ↓
+Scope selection
+      ↓
+Store-family aggregation
+      ↓
+Statistical analysis
+      ↓
+Causal feature engineering
+      ↓
+Temporal backtesting
+      ↓
+Model selection
+      ↓
+Final 16-day holdout
+      ↓
+Error analysis
+      ↓
+Inventory simulation
+      ↓
+FastAPI + Streamlit
+      ↓
+Docker + GitHub Actions
+```
+
+## Methodology
+
+### Leakage prevention
+
+All target-derived features use past information only.
+
+Example:
+
+```python
+sales.shift(1).rolling(7).mean()
+```
+
+The current target value is never included in the features used to predict that same date.
+
+### Temporal validation
+
+Random train/test splits are not used.
+
+- historical 16-day windows are used for model selection;
+- the final 16 days are kept as an untouched holdout;
+- the holdout is evaluated only after the champion model is frozen;
+- multi-step forecasts are generated recursively to reproduce production conditions.
+
+### Baselines
+
+The forecasting models are compared against simple but strong references such as:
+
+- seasonal naïve forecast using lag 7;
+- four-week historical mean;
+- historical day-of-week mean.
+
+A more complex model is retained only if it improves on these references.
+
+## Final results
+
+The selected model is **HistGradientBoosting**.
+
+| Metric | Result |
+|---|---:|
+| Validation WAPE | **8.73%** |
+| Improvement vs best validation baseline | **22.12%** |
+| Final holdout WAPE | **14.00%** |
+| Holdout normalized bias | **+8.58%** |
+| Holdout MAE | **319.54** |
+| Holdout RMSLE | **0.222** |
+
+The final holdout covers **2017-07-31 to 2017-08-15** and was never used for model selection or hyperparameter tuning.
+
+The positive bias indicates that the model tends to **overforecast globally**, which is important when interpreting downstream inventory results.
+
+More detailed metrics by store, family, promotion status, forecast horizon, and hierarchy level are available in the generated outputs and report.
+
+## Metrics
+
+**WAPE** is the primary model-selection metric because it expresses total absolute forecasting error relative to total sales volume.
+
+**Bias** is used as a guardrail because a model can have acceptable WAPE while systematically over- or under-forecasting.
+
+**MAE** expresses the average error directly in sales units.
+
+**RMSLE** complements volume-based metrics by giving more importance to proportional errors across series of different sizes.
+
+## Inventory simulation
+
+Forecasts are also evaluated through a simplified inventory simulation using assumptions for:
+
+- initial stock;
+- lead time;
+- review period;
+- safety stock;
+- holding cost;
+- stockout cost.
+
+This is a **scenario analysis**, not a reconstruction of Favorita's real supply-chain policy, because the original dataset does not contain inventory or stockout information.
+
+## Run the application with Docker
+
+For users who only want to explore the application, the repository contains the small precomputed runtime artifacts required by FastAPI and Streamlit.
+
+Requirements:
+
+- Git
+- Docker
 
 ```bash
-python -m venv .venv
-# Windows PowerShell
+git clone https://github.com/wiame-bourass/retail-demand-forecasting.git
+cd retail-demand-forecasting
+docker compose up --build
+```
+
+Then open:
+
+- FastAPI documentation: `http://localhost:8000/docs`
+- Streamlit dashboard: `http://localhost:8501`
+
+No local Python environment and no raw Favorita dataset are required for this Docker demo.
+
+## Reproduce the full ML pipeline
+
+To reproduce training and evaluation from the original data:
+
+1. Download the original Favorita competition files.
+2. Place the extracted CSV files in `data/raw/`.
+3. Create a Python 3.12 environment and install the project dependencies.
+4. Run the pipeline.
+
+Windows PowerShell:
+
+```powershell
+py -3.12 -m venv .venv
 .venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
-pip install -e .
-pip install -r requirements-core.txt
-python scripts/run_demo.py
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+.\run_project.ps1
 ```
 
-Le mode démo génère un mini-dataset Favorita compatible, exécute le pipeline avec `HistGradientBoosting`, produit les rapports et vérifie le fonctionnement avant le traitement des données Kaggle réelles.
+The pipeline generates processed datasets, model artifacts, forecasts, evaluation tables, monitoring outputs, and the executive report.
 
-## Exécution avec le dataset Kaggle réel
+## API and dashboard
 
-1. Télécharge les fichiers de la compétition originale.
-2. Place les fichiers `.7z` ou `.csv` dans `data/raw/`.
-3. Exécute :
+The application layer exposes precomputed batch forecasts rather than retraining the model on each request.
 
-```bash
-python scripts/00_extract_archives.py --config config/project.yaml
-python scripts/01_audit_raw_data.py --config config/project.yaml
-python scripts/02_select_scope.py --config config/project.yaml
-python scripts/03_build_curated_panel.py --config config/project.yaml
-python scripts/04_statistical_analysis.py --config config/project.yaml
-python scripts/05_build_feature_dataset.py --config config/project.yaml
-python scripts/05b_feature_diagnostics.py --config config/project.yaml
-python scripts/05c_build_family_weights.py --config config/project.yaml
-python scripts/06_backtest_and_select.py --config config/project.yaml
-python scripts/06b_statistical_models_benchmark.py --config config/project.yaml
-python scripts/07_evaluate_holdout.py --config config/project.yaml
-python scripts/08_train_final_and_predict.py --config config/project.yaml
-python scripts/09_inventory_simulation.py --config config/project.yaml
-python scripts/10_explain_model.py --config config/project.yaml
-python scripts/11_generate_executive_report.py --config config/project.yaml
-python scripts/12_monitoring_snapshot.py --config config/project.yaml
+FastAPI provides endpoints for:
+
+- service health;
+- model metadata;
+- forecast retrieval;
+- forecast aggregation.
+
+Streamlit provides an interactive view of model metrics, forecasts, error analysis, and inventory results.
+
+## Testing and CI
+
+The project includes automated tests for:
+
+- forecasting metrics;
+- temporal split logic;
+- causal feature construction;
+- leakage prevention;
+- hierarchical consistency;
+- intermittent-demand models;
+- inventory simulation;
+- monitoring utilities.
+
+GitHub Actions runs on every push and pull request to:
+
+```text
+install dependencies
+      ↓
+run Ruff
+      ↓
+run pytest
+      ↓
+build the Docker image
 ```
 
-Ou :
+## Repository structure
 
-```bash
-make all CONFIG=config/project.yaml
+```text
+.
+├── .github/workflows/       # continuous integration
+├── artifacts/               # lightweight runtime metadata
+├── config/                  # pipeline configuration
+├── docs/                    # methodology
+├── notebooks/               # exploratory analysis
+├── outputs/                 # lightweight runtime outputs
+├── reports/                 # results and figures
+├── scripts/                 # executable pipeline stages
+├── src/favorita_forecasting/
+│   ├── api/
+│   ├── dashboard/
+│   ├── data/
+│   ├── evaluation/
+│   ├── features/
+│   ├── modeling/
+│   └── simulation/
+├── tests/
+├── Dockerfile
+├── docker-compose.yml
+├── pyproject.toml
+└── run_project.ps1
 ```
 
-## Ordre méthodologique
+## Main limitations
 
-- Les fenêtres de validation servent au choix du modèle et des hyperparamètres.
-- Les 16 derniers jours historiques constituent le holdout final et ne servent jamais au réglage.
-- Le modèle champion est ensuite réentraîné sur tout l'historique et prédit les 16 jours Kaggle.
-- Les poids de famille éventuels sont calculés uniquement avec la période d'entraînement.
+- observed sales are not identical to unconstrained demand;
+- stock levels and stockouts are unavailable;
+- promotion depth and marketing intensity are unavailable;
+- inventory costs and lead times are simulated assumptions;
+- the portfolio scope does not cover every possible store-family combination;
+- the model operates at `store × family` level rather than the original Kaggle `store × item` level.
 
-## Fichiers clés
+## Tech stack
 
-- `docs/METHODOLOGY_AND_MODEL_CHOICES.md` : démarche complète et justification des choix.
-- `docs/EXECUTION_GUIDE_WINDOWS.md` : commandes exactes pour Windows/VS Code.
-- `notebooks/` : analyses guidées, sans dupliquer la logique de production.
-- `src/` : code réutilisable et testable.
-- `sql/` : analyses SQL DuckDB.
+**Python · pandas · scikit-learn · DuckDB · Parquet · FastAPI · Streamlit · Docker · pytest · Ruff · GitHub Actions**
 
-## API et dashboard
+## Documentation
 
-Après l'étape finale :
+Detailed methodological choices are documented in:
 
-```bash
-uvicorn favorita_forecasting.api.main:app --reload
-streamlit run src/favorita_forecasting/dashboard/app.py
-```
-
-## Tests
-
-```bash
-pytest
-```
-
-Les tests couvrent les métriques, la causalité des features, la cohérence bottom-up et la simulation de stock.
-
-## Important : score Kaggle officiel
-
-Le modèle principal prédit au niveau `store_nbr × family`. Il ne produit donc pas directement une soumission officielle Kaggle, qui exige des prévisions `store_nbr × item_nbr`. Le dépôt privilégie le cas d'usage métier agrégé. Une allocation famille → articles serait une extension séparée et devrait être évaluée avec la NWRMSLE officielle.
+- `docs/METHODOLOGY_AND_MODEL_CHOICES.md`
+- `reports/EXECUTIVE_REPORT.md`
