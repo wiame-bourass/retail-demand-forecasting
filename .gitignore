@@ -70,7 +70,8 @@ outputs/*
 !reports/figures/
 !reports/figures/*.png
 # Personal / interview documentation
-docs/LOREAL_SKILLS_MAPPING.md
-docs/INTERVIEW_STORY.md
 START_HERE.md
 *.docx
+
+# Python package metadata
+*.egg-info/

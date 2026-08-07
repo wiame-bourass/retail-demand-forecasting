@@ -1,5 +1,5 @@
 project:
-  name: favorita_loreal_forecasting_demo
+  name: retail_demand_forecasting_demo
   random_seed: 42
   timezone: Europe/Paris
 
