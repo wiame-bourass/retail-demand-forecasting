@@ -186,7 +186,7 @@ pip install -r requirements-dev.txt
 .\run_project.ps1
 ```
 
-The pipeline generates processed datasets, model artifacts, forecasts, evaluation tables, monitoring outputs, and the executive report.
+The pipeline generates processed datasets, model artifacts, forecasts, evaluation tables, drift diagnostics, and the executive report.
 
 ## API and dashboard
 
@@ -212,7 +212,7 @@ The project includes automated tests for:
 - hierarchical consistency;
 - intermittent-demand models;
 - inventory simulation;
-- monitoring utilities.
+- drift detection utilities.
 
 GitHub Actions runs on every push and pull request to:
 
