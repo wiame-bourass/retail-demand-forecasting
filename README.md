@@ -245,7 +245,7 @@ build the Docker image
 │   ├── evaluation/
 │   ├── features/
 │   ├── modeling/
-│   └── simulation/
+│   └── inventory/
 ├── tests/
 ├── Dockerfile
 ├── docker-compose.yml
@@ -274,7 +274,7 @@ build the Docker image
 - Docker
 - Pytest
 - Ruff
-- GitHub Actions (CI/CD)
+- GitHub Actions (CI)
 
 ## Documentation
 

@@ -106,18 +106,13 @@ La prévision est récursive : lorsque l'horizon dépasse un lag disponible, les
 
 Un modèle avancé n'est retenu que s'il bat ces références sur des fenêtres futures.
 
-## 9. Pourquoi LightGBM
+## 9. Mod?les
 
-LightGBM est le candidat principal car il :
+Les mod?les sont compar?s sur les m?mes fen?tres de validation temporelle et face aux m?mes baselines.
 
-- apprend des non-linéarités et interactions promotion-calendrier ;
-- supporte bien les données tabulaires ;
-- entraîne rapidement sur un panel global ;
-- gère les valeurs manquantes ;
-- fournit des importances et explications ;
-- est plus scalable que des modèles statistiques séparés par série.
+Le pipeline ?value des approches de gradient boosting adapt?es aux donn?es tabulaires. HistGradientBoosting a obtenu le meilleur r?sultat lors de l'exp?rience finale et a donc ?t? retenu pour l'?valuation sur le holdout.
 
-CatBoost sert de comparaison pour les catégories et HistGradientBoosting de contrôle scikit-learn. ETS/SARIMA ne sont appliqués qu'à un sous-ensemble car un modèle par série est coûteux et moins flexible avec les promotions.
+LightGBM et CatBoost restent des alternatives int?ressantes pour approfondir les exp?riences. Des mod?les statistiques comme ETS et SARIMA sont ?galement utilis?s comme benchmarks sur un sous-ensemble de s?ries.
 
 ## 10. Choix de la métrique
 
@@ -186,4 +181,3 @@ Les résultats sont des scénarios, pas une optimisation réelle de Favorita.
 - API FastAPI de consultation des prévisions batch ;
 - dashboard Streamlit ;
 - Docker et CI ;
-- guide GCP Cloud Run / Vertex AI.
