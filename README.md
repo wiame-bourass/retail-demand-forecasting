@@ -264,7 +264,17 @@ build the Docker image
 
 ## Tech stack
 
-**Python · pandas · scikit-learn · DuckDB · Parquet · FastAPI · Streamlit · Docker · pytest · Ruff · GitHub Actions**
+- Python
+- DuckDB
+- Pandas
+- scikit-learn
+- Parquet
+- FastAPI
+- Streamlit
+- Docker
+- Pytest
+- Ruff
+- GitHub Actions (CI/CD)
 
 ## Documentation
 
