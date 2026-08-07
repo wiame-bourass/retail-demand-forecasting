@@ -1,0 +1,71 @@
+# =========================
+# Python / environnement
+# =========================
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.env
+.DS_Store
+
+# =========================
+# MLflow
+# =========================
+mlruns/
+
+# =========================
+# Données
+# =========================
+
+# Données Favorita brutes : ne jamais envoyer sur GitHub
+data/raw/*
+!data/raw/.gitkeep
+!data/raw/README.md
+
+# Données de démo
+data/demo_raw/*
+!data/demo_raw/.gitkeep
+
+# Données intermédiaires / transformées
+data/interim/*
+data/demo_interim/*
+data/processed/*
+data/demo_processed/*
+
+# =========================
+# Artifacts modèles
+# =========================
+
+# Tout ignorer par défaut
+artifacts/*
+
+# Garder le dossier
+!artifacts/.gitkeep
+
+# Petit fichier nécessaire à FastAPI / Streamlit / Docker
+!artifacts/model_card.json
+
+# =========================
+# Outputs
+# =========================
+
+# Tout ignorer par défaut
+outputs/*
+
+# Garder le dossier
+!outputs/.gitkeep
+
+# Fichiers nécessaires pour exécuter l'application Docker
+!outputs/test_forecasts.parquet
+!outputs/holdout_predictions.parquet
+!outputs/holdout_metrics.csv
+!outputs/inventory_comparison.csv
+
+# =========================
+# Figures du rapport
+# =========================
+
+# On garde les vraies figures pour le portfolio GitHub
+!reports/figures/
+!reports/figures/*.png

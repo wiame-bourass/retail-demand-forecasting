@@ -1,0 +1,27 @@
+{
+  "project": "favorita_loreal_forecasting",
+  "model": "hist_gradient_boosting",
+  "params": {
+    "l2_regularization": 0.0,
+    "learning_rate": 0.1,
+    "max_iter": 200,
+    "max_leaf_nodes": 31
+  },
+  "validation_mean_wape": 0.08726784115119365,
+  "holdout_metrics": {
+    "mae": 319.5394842221116,
+    "wape": 0.13998373064406278,
+    "bias": 0.08580308908217346,
+    "rmsle": 0.22224354985744244,
+    "rmse": 689.6491928205091,
+    "forecast_accuracy": 0.8600162693559372,
+    "n": 1424
+  },
+  "target": "observed sales used as proxy for demand",
+  "horizon_days": 16,
+  "known_limitations": [
+    "No stock or stockout data",
+    "Promotion variable has no discount depth",
+    "Inventory parameters are simulated"
+  ]
+}

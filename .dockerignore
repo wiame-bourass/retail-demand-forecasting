@@ -1,0 +1,15 @@
+﻿.venv/
+.git/
+__pycache__/
+*.pyc
+*.pyo
+*.zip
+
+data/
+reports/
+notebooks/
+tests/
+mlruns/
+
+outputs/demo/
+artifacts/demo/

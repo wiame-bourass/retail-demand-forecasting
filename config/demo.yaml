@@ -1,0 +1,71 @@
+project:
+  name: favorita_loreal_forecasting_demo
+  random_seed: 42
+  timezone: Europe/Paris
+
+paths:
+  raw_dir: data/demo_raw
+  interim_dir: data/demo_interim
+  processed_dir: data/demo_processed
+  artifacts_dir: artifacts/demo
+  outputs_dir: outputs/demo
+  reports_dir: reports/demo
+
+scope:
+  n_stores: 3
+  n_families: 4
+  history_years: 2
+  selection_window_days: 365
+  min_series_history_days: 120
+  explicit_stores: []
+  explicit_families: []
+
+cleaning:
+  negative_sales_policy: clip_zero
+  missing_onpromotion_value: false
+  complete_grid_after_first_observation: true
+
+forecast:
+  horizon_days: 16
+  validation_folds: 2
+  holdout_days: 16
+  target_column: sales
+  target_transform: log1p
+  clip_predictions_at_zero: true
+
+features:
+  sales_lags: [1, 7, 14, 21, 28, 364]
+  rolling_windows: [7, 14, 28]
+  transaction_lags: [7, 14, 28]
+  include_transactions: false
+  include_oil: true
+  include_holidays: true
+  include_promotion_history: true
+  high_missingness_threshold: 0.95
+  high_correlation_threshold: 0.995
+
+models:
+  primary_metric: wape
+  bias_guardrail_abs: 0.10
+  candidates:
+    - seasonal_naive_7
+    - four_week_mean
+    - dow_mean
+    - hist_gradient_boosting
+  hist_gradient_boosting:
+    max_iter: [100]
+    learning_rate: [0.08]
+    max_leaf_nodes: [31]
+    l2_regularization: [0.0]
+
+inventory:
+  lead_time_days: 3
+  review_period_days: 1
+  service_level: 0.95
+  holding_cost_per_unit_day: 0.05
+  stockout_cost_per_unit: 2.00
+  initial_stock_days_of_cover: 5
+
+serving:
+  host: 0.0.0.0
+  port: 8000
