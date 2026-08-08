@@ -67,7 +67,7 @@ outputs/*
 # On garde les vraies figures pour le portfolio GitHub
 !reports/figures/
 !reports/figures/*.png
-# Personal / interview documentation
+# Local-only files
 START_HERE.md
 *.docx
 
